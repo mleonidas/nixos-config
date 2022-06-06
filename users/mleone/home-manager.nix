@@ -18,11 +18,21 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.git-crypt
     pkgs.htop
     pkgs.jq
+    pkgs.lsd
+    pkgs.unzip
+    pkgs.vivid
+    pkgs.awscli
     pkgs.ripgrep
     pkgs.rofi
+    pkgs.starship
+    pkgs.autojump
+    pkgs.stow
     pkgs.tree
     pkgs.watch
     pkgs.zathura
+    pkgs.tree-sitter
+    pkgs.kubectl
+    pkgs.kubie
     pkgs._1password
 
     pkgs.go
@@ -47,26 +57,27 @@ let sources = import ../../nix/sources.nix; in {
     MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
   };
 
+  home.file.".functions".source = ./zsh/functions;
   home.file.".gdbinit".source = ./gdbinit;
   home.file.".inputrc".source = ./inputrc;
 
   xdg.configFile."i3/config".text = builtins.readFile ./i3;
-  xdg.configFile."rofi/config.rasi".text = builtins.readFile ./rofi;
-
-  # tree-sitter parsers
-  xdg.configFile."nvim/parser/proto.so".source = "${pkgs.tree-sitter-proto}/parser";
-  xdg.configFile."nvim/queries/proto/folds.scm".source =
-    "${sources.tree-sitter-proto}/queries/folds.scm";
-  xdg.configFile."nvim/queries/proto/highlights.scm".source =
-    "${sources.tree-sitter-proto}/queries/highlights.scm";
-  xdg.configFile."nvim/queries/proto/textobjects.scm".source =
-    ./textobjects.scm;
+  xdg.configFile.nvim = {
+    source = ./nvim;
+    recursive = true;
+  };
 
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
 
   programs.gpg.enable = true;
+
+  programs.rofi  = {
+    enable = true;
+    terminal = "${pkgs.alacritty}/bin/alacritty";
+    theme = ./theme.rafi;
+  };
 
   programs.bash = {
     enable = true;
@@ -94,7 +105,7 @@ let sources = import ../../nix/sources.nix; in {
       whitelist = {
         prefix= [
           "$HOME/code/go/src/github.com/hashicorp"
-          "$HOME/code/go/src/github.com/mitchellh"
+          "$HOME/code/go/src/github.com/mleonidas"
         ];
 
         exact = ["$HOME/.envrc"];
@@ -139,14 +150,66 @@ let sources = import ../../nix/sources.nix; in {
     ];
   };
 
+  programs.zsh = {
+    enable = true;
+    enableAutosuggestions = true;
+    autocd = true;
+    enableCompletion = true;
+    shellAliases = {
+      pbcopy = "xclip";
+      pbpaste = "xclip -o";
+      ssh = "ssh -A";
+      more = "less";
+      vim = "nvim";
+      grep = "grep --color";
+      tmux = "tmux -2";
+      gitpp = "git pull --prune --all";
+      gitc = "git commit -m";
+      gitp = "git push";
+      gss = "git status -s";
+      gita = "git add .";
+      gitph = "git push origin HEAD";
+      sha = "git log | head -1";
+      dc = "docker-compose";
+      k = "kubectl";
+      ls = "lsd";
+      l = "ls -lFh";
+      la = "ls -lAFh";
+      lr = "ls -tRFh";
+      ll = "ls -l";
+    };
+
+    history = {
+      expireDuplicatesFirst = true;
+      save = 1000000;
+      size = 10000000;
+    };
+
+    initExtra = ''
+      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=5'
+      export LS_COLORS=$(vivid generate solarized-dark)
+      source $HOME/.config/zsh/functions
+      bindkey -e
+      bindkey '^U' backward-kill-line
+      bindkey '^Q' push-line-or-edit
+      bindkey -s "^L" 'sesh^M'
+      eval "$(starship init zsh)"
+    '';
+    zplug = {
+      enable = true;
+      plugins = [
+        { name = "zsh-users/zsh-autosuggestions";}
+        { name = "zsh-users/zsh-history-substring-search";}
+        { name = "/zdharma-continuum/fast-syntax-highlighting";}
+      ];
+
+    };
+  };
+
   programs.git = {
     enable = true;
-    userName = "Mitchell Hashimoto";
-    userEmail = "mitchell.hashimoto@gmail.com";
-    signing = {
-      key = "523D5DC389D273BC";
-      signByDefault = true;
-    };
+    userName = "Michael Leone ";
+    userEmail = "mike@powertools.dev";
     aliases = {
       prettylog = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
       root = "rev-parse --show-toplevel";
@@ -156,7 +219,7 @@ let sources = import ../../nix/sources.nix; in {
       color.ui = true;
       core.askPass = ""; # needs to be empty to use terminal for ask pass
       credential.helper = "store"; # want to make this more secure
-      github.user = "mitchellh";
+      github.user = "mleonidas";
       push.default = "tracking";
       init.defaultBranch = "main";
     };
@@ -165,7 +228,7 @@ let sources = import ../../nix/sources.nix; in {
   programs.go = {
     enable = true;
     goPath = "code/go";
-    goPrivate = [ "github.com/mitchellh" "github.com/hashicorp" "rfc822.mx" ];
+    goPrivate = [ "github.com/powertooldev"];
   };
 
   programs.tmux = {
@@ -173,41 +236,49 @@ let sources = import ../../nix/sources.nix; in {
     terminal = "xterm-256color";
     shortcut = "l";
     secureSocket = false;
-
-    extraConfig = ''
-      set -ga terminal-overrides ",*256col*:Tc"
-
-      set -g @dracula-show-battery false
-      set -g @dracula-show-network false
-      set -g @dracula-show-weather false
-
-      bind -n C-k send-keys "clear"\; send-keys "Enter"
-
-      run-shell ${sources.tmux-pain-control}/pain_control.tmux
-      run-shell ${sources.tmux-dracula}/dracula.tmux
-    '';
   };
 
   programs.alacritty = {
     enable = true;
-
     settings = {
-      env.TERM = "xterm-256color";
+      font = {
+        size = 9.0;
+	antialias = true;
+        normal.family = "MesloLGMDZ Nerd Font Mono";
+	bold.family = "MesloLGMDZ Nerd Font Mono";
+	italic.family = "MesloLGMDZ Nerd Font Mono";
+      };
 
-      key_bindings = [
-        { key = "K"; mods = "Command"; chars = "ClearHistory"; }
-        { key = "V"; mods = "Command"; action = "Paste"; }
-        { key = "C"; mods = "Command"; action = "Copy"; }
-        { key = "Key0"; mods = "Command"; action = "ResetFontSize"; }
-        { key = "Equals"; mods = "Command"; action = "IncreaseFontSize"; }
-        { key = "Subtract"; mods = "Command"; action = "DecreaseFontSize"; }
-      ];
+      colors = {
+        primary = {
+          background = "0x002b36";
+          foreground = "0x839496";
+	};
+
+	  # Normal colors
+        normal = {
+          black =   "0x073642";
+	  red =     "0xdc322f";
+	  green =   "0x859900";
+	  yellow =  "0xb58900";
+	  blue =    "0x268bd2";
+	  magenta = "0xd33682";
+	  cyan =    "0x2aa198";
+	  white =   "0xeee8d5";
+        };
+
+        bright = {
+          black =   "0x002b36";
+	  red =     "0xcb4b16";
+	  green =   "0x586e75";
+	  yellow =  "0x657b83";
+	  blue =    "0x839496";
+	  magenta = "0x6c71c4";
+	  cyan =    "0x93a1a1";
+	  white =   "0xfdf6e3";
+        };
+      };
     };
-  };
-
-  programs.kitty = {
-    enable = true;
-    extraConfig = builtins.readFile ./kitty;
   };
 
   programs.i3status = {
@@ -230,39 +301,10 @@ let sources = import ../../nix/sources.nix; in {
   programs.neovim = {
     enable = true;
     package = pkgs.neovim-nightly;
+  };
 
-    plugins = with pkgs; [
-      customVim.vim-cue
-      customVim.vim-fish
-      customVim.vim-fugitive
-      customVim.vim-glsl
-      customVim.vim-misc
-      customVim.vim-pgsql
-      customVim.vim-tla
-      customVim.vim-zig
-      customVim.pigeon
-      customVim.AfterColors
-
-      customVim.vim-nord
-      customVim.nvim-comment
-      customVim.nvim-lspconfig
-      customVim.nvim-plenary # required for telescope
-      customVim.nvim-telescope
-      customVim.nvim-treesitter
-      customVim.nvim-treesitter-playground
-      customVim.nvim-treesitter-textobjects
-
-      vimPlugins.vim-airline
-      vimPlugins.vim-airline-themes
-      vimPlugins.vim-eunuch
-      vimPlugins.vim-gitgutter
-
-      vimPlugins.vim-markdown
-      vimPlugins.vim-nix
-      vimPlugins.typescript-vim
-    ];
-
-    extraConfig = (import ./vim-config.nix) { inherit sources; };
+  programs.autojump = {
+    enable = true;
   };
 
   services.gpg-agent = {
