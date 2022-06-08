@@ -32,7 +32,7 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.zathura
     pkgs.tree-sitter
     pkgs.kubectl
-    pkgs.kubie
+    pkgs.kubectx
     pkgs._1password
 
     pkgs.go
@@ -213,6 +213,23 @@ let sources = import ../../nix/sources.nix; in {
     aliases = {
       prettylog = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
       root = "rev-parse --show-toplevel";
+      lgr = "log --oneline --decorate --tags --parents --graph";
+      br = "branch";
+      co = "checkout";
+      lgf = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''%C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all";
+      ci = "commit";
+      fl = "log -u";
+      dl = "!git ll -1";
+      gr = "grep -Ii";
+      la = "!git config -l | grep alias | cut -c 7-";
+      ir = "reset";
+      r1 = "reset HEAD^";
+      r2 = "reset HEAD^^";
+      rh = "reset --hard";
+      rh1 = "reset HEAD^ --hard";
+      rh2 = "reset HEAD^^ --hard";
+      wip = "commit -m {WIP}";
+
     };
     extraConfig = {
       branch.autosetuprebase = "always";
@@ -236,17 +253,34 @@ let sources = import ../../nix/sources.nix; in {
     terminal = "xterm-256color";
     shortcut = "l";
     secureSocket = false;
+    plugins = with pkgs.tmuxPlugins; [
+      tmux-colors-solarized
+      pain-control
+      dracula
+    ];
+    extraConfig = ''
+      set -g prefix C-f
+      bind C-f send-prefix
+      set-window-option -g mode-keys vi # vi key
+      set-option -g status-keys vi
+      set -g default-terminal "screen-256color"
+      set-option -ga terminal-overrides ",xterm-256color:Tc"
+
+      '';
   };
 
   programs.alacritty = {
     enable = true;
     settings = {
+      env = {
+        TERM = "xterm-256color";
+      };
       font = {
-        size = 9.0;
-	antialias = true;
+        size = 10.0;
+        antialias = true;
         normal.family = "MesloLGMDZ Nerd Font Mono";
-	bold.family = "MesloLGMDZ Nerd Font Mono";
-	italic.family = "MesloLGMDZ Nerd Font Mono";
+        bold.family = "MesloLGMDZ Nerd Font Mono";
+        italic.family = "MesloLGMDZ Nerd Font Mono";
       };
 
       colors = {
@@ -256,8 +290,8 @@ let sources = import ../../nix/sources.nix; in {
 	};
 
 	  # Normal colors
-        normal = {
-          black =   "0x073642";
+      normal = {
+      black =   "0x073642";
 	  red =     "0xdc322f";
 	  green =   "0x859900";
 	  yellow =  "0xb58900";
