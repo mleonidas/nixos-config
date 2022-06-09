@@ -80,6 +80,7 @@
 
     fonts = [
       pkgs.fira-code
+      (pkgs.nerdfonts.override { fonts = [ "FiraCode" "Meslo" ]; })
     ];
   };
 

@@ -77,7 +77,7 @@ Plug 'ThePrimeagen/harpoon'
 " fuzzy finding
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-telescope/telescope-live-grep-raw.nvim'
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 
 " markdown
 Plug 'ellisonleao/glow.nvim'
@@ -253,11 +253,7 @@ endif
 let g:gitblame_enabled = 0
 
 lua <<EOF
-require("todo-comments").setup{
-  highlight = {
-        pattern = [[.*<(KEYWORDS).*:]],
-    }
-}
+require("todo-comments").setup{}
 EOF
 
 augroup Mleonidas
