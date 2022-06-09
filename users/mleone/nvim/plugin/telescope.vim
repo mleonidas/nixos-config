@@ -1,11 +1,11 @@
 
 lua << EOF
 require('telescope').setup{}
-require('telescope').load_extension('live_grep_raw')
+require('telescope').load_extension('live_grep_args')
 EOF
 
 nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files({hidden=true, previewer=false})<cr>
-nnoremap <leader>fg <cmd>lua require("telescope").extensions.live_grep_raw.live_grep_raw()<cr>
+nnoremap <leader>fg <cmd>lua require("telescope").extensions.live_grep_raw.live_grep_args()<cr>
 nnoremap <leader>bb <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 nnoremap <leader>gb :lua require('telescope.builtin').git_branches()<CR>

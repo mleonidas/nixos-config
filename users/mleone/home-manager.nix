@@ -256,6 +256,7 @@ let sources = import ../../nix/sources.nix; in {
     plugins = with pkgs.tmuxPlugins; [
       tmux-colors-solarized
       pain-control
+      vim-tmux-navigator
       dracula
     ];
     extraConfig = ''
