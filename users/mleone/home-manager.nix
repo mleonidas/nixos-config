@@ -257,15 +257,17 @@ let sources = import ../../nix/sources.nix; in {
       tmux-colors-solarized
       pain-control
       dracula
+
     ];
     extraConfig = ''
       set -g prefix C-f
       bind C-f send-prefix
       set-window-option -g mode-keys vi # vi key
       set-option -g status-keys vi
-      set -g default-terminal "screen-256color"
+      set -g default-terminal "xterm-256color"
       set-option -ga terminal-overrides ",xterm-256color:Tc"
-
+      bind-key -r S run-shell "tmux neww ~/.bin/sesh asdoifj"
+      bind-key -r C run-shell "tmux neww ~/.bin/tmux-cht.sh"
       '';
   };
 
@@ -281,6 +283,7 @@ let sources = import ../../nix/sources.nix; in {
         normal.family = "MesloLGMDZ Nerd Font Mono";
         bold.family = "MesloLGMDZ Nerd Font Mono";
         italic.family = "MesloLGMDZ Nerd Font Mono";
+        italic.style = "Italic";
       };
 
       colors = {
