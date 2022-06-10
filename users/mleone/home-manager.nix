@@ -24,6 +24,7 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.awscli
     pkgs.ripgrep
     pkgs.rofi
+    pkgs.delve
     pkgs.starship
     pkgs.autojump
     pkgs.stow
@@ -264,7 +265,7 @@ let sources = import ../../nix/sources.nix; in {
       bind C-f send-prefix
       set-window-option -g mode-keys vi # vi key
       set-option -g status-keys vi
-      set -g default-terminal "screen-256color"
+      set -g default-terminal "xterm-256color"
       set-option -ga terminal-overrides ",xterm-256color:Tc"
 
       '';
@@ -280,8 +281,11 @@ let sources = import ../../nix/sources.nix; in {
         size = 11.0;
         antialias = true;
         normal.family = "MesloLGMDZ Nerd Font Mono";
+        normal.style = "Regular";
         bold.family = "MesloLGMDZ Nerd Font Mono";
+        bold.style = "Bold";
         italic.family = "MesloLGMDZ Nerd Font Mono";
+        italic.style = "Italic";
       };
 
       colors = {
@@ -292,26 +296,26 @@ let sources = import ../../nix/sources.nix; in {
 
 	  # Normal colors
       normal = {
-      black =   "0x073642";
-	  red =     "0xdc322f";
-	  green =   "0x859900";
-	  yellow =  "0xb58900";
-	  blue =    "0x268bd2";
-	  magenta = "0xd33682";
-	  cyan =    "0x2aa198";
-	  white =   "0xeee8d5";
-        };
+        black =   "0x073642";
+	    red =     "0xdc322f";
+	    green =   "0x859900";
+	    yellow =  "0xb58900";
+	    blue =    "0x268bd2";
+	    magenta = "0xd33682";
+	    cyan =    "0x2aa198";
+	    white =   "0xeee8d5";
+      };
 
-        bright = {
-          black =   "0x002b36";
-	  red =     "0xcb4b16";
-	  green =   "0x586e75";
-	  yellow =  "0x657b83";
-	  blue =    "0x839496";
-	  magenta = "0x6c71c4";
-	  cyan =    "0x93a1a1";
-	  white =   "0xfdf6e3";
-        };
+      bright = {
+        black =   "0x002b36";
+	    red =     "0xcb4b16";
+	    green =   "0x586e75";
+	    yellow =  "0x657b83";
+	    blue =    "0x839496";
+	    magenta = "0x6c71c4";
+	    cyan =    "0x93a1a1";
+	    white =   "0xfdf6e3";
+      };
       };
     };
   };
