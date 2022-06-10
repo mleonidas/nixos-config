@@ -86,6 +86,11 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+
+  environment.extraInit = ''
+    unset -v SSH_ASKPASS
+    '';
+
   environment.systemPackages = with pkgs; [
     gnumake
     killall
