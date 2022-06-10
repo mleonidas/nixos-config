@@ -24,7 +24,7 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.awscli
     pkgs.ripgrep
     pkgs.rofi
-    pkgs.delve
+    pkgs.file
     pkgs.starship
     pkgs.autojump
     pkgs.stow
