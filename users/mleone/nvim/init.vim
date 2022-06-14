@@ -253,7 +253,12 @@ endif
 let g:gitblame_enabled = 0
 
 lua <<EOF
-require("todo-comments").setup{}
+require("todo-comments").setup{
+  highlight = {
+      pattern = [[.*<(KEYWORDS).*:]],
+  }
+
+}
 EOF
 
 augroup Mleonidas
