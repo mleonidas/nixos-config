@@ -35,12 +35,10 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.kubectl
     pkgs.kubectx
     pkgs._1password
-
     pkgs.go
     pkgs.gopls
     pkgs.zig-master
 
-    pkgs.renderdoc
     pkgs.tlaplusToolbox
     pkgs.tetex
   ];
@@ -67,6 +65,17 @@ let sources = import ../../nix/sources.nix; in {
     source = ./nvim;
     recursive = true;
   };
+  xdg.configFile."rofi/config.rasi".text = builtins.readFile ./rofi;
+  xdg.configFile."devtty/config".text = builtins.readFile ./devtty;
+
+  # tree-sitter parsers
+  xdg.configFile."nvim/parser/proto.so".source = "${pkgs.tree-sitter-proto}/parser";
+  xdg.configFile."nvim/queries/proto/folds.scm".source =
+    "${sources.tree-sitter-proto}/queries/folds.scm";
+  xdg.configFile."nvim/queries/proto/highlights.scm".source =
+    "${sources.tree-sitter-proto}/queries/highlights.scm";
+  xdg.configFile."nvim/queries/proto/textobjects.scm".source =
+    ./textobjects.scm;
 
   #---------------------------------------------------------------------
   # Programs
