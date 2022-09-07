@@ -1,14 +1,18 @@
 { pkgs, ... }:
 
 {
+
+  # https://github.com/nix-community/home-manager/pull/2408
+  environment.pathsToLink = [ "/share/zsh" ];
+
   users.users.mleone = {
     isNormalUser = true;
     home = "/home/mleone";
     extraGroups = [ "docker" "wheel" ];
     shell = pkgs.zsh;
-    hashedPassword = "$6$5s822HvW7ds8laRP$T2ocJA3zYacwE3RFH3J79/DI2hPa8viTC.rjhTKehoPSKIbK3ukHoV9emP/kXih7R91egfxcNN6n6APkzjMkq1"; 
+    hashedPassword = "$6$PmPEpsEJ.V.Fial5$b70x7sYfU/vRdDHF4zMImVVPMZw9p1EzE9LpFblT8y5OJfkEhP0FHpXRnEW3oWIxndX1K5H1YZ7i29EucOjI30";
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnsHRUgsp35/Bsae3afaJbQhCOfLZVK5hAxStuRkriF mike@powertools.dev"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINLsQtK/XeDVd3PRNrPLogYYw+6Sjub+7FiPaAsZloCQ mleone@flowcode.com"
     ];
   };
 
