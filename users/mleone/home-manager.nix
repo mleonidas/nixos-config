@@ -30,6 +30,7 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.stow
     pkgs.tree
     pkgs.watch
+    pkgs.aws-vault
     pkgs.zathura
     pkgs.tree-sitter
     pkgs.kubectl
@@ -286,8 +287,11 @@ let sources = import ../../nix/sources.nix; in {
       env = {
         TERM = "xterm-256color";
       };
+      scrolling = {
+        multiplier = 5;
+      };
       font = {
-        size = 11.0;
+        size = 11.5;
         antialias = true;
         normal.family = "MesloLGMDZ Nerd Font Mono";
         normal.style = "Regular";

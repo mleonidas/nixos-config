@@ -11,7 +11,7 @@ end
 
 -- setup some bs for lua language server on osx
 local sumneko_binary_path = vim.fn.exepath("lua-language-server")
-local sumneko_root_path = "/opt/homebrew/Cellar/lua-language-server/3.2.2/libexec/bin/"
+local sumneko_root_path = "/opt/homebrew/Cellar/lua-language-server/3.5.2/libexec/bin/"
 local runtime_path = vim.split(package.path, ';')
 table.insert(runtime_path, "lua/?.lua")
 table.insert(runtime_path, "lua/?/init.lua")
@@ -77,11 +77,64 @@ require 'lspconfig'.yamlls.setup {
     on_attach = on_attach,
 }
 
-require 'lspconfig'.pyright.setup {
-    on_attach = on_attach,
+
+-- require'lspconfig'.pylsp.setup({
+--     on_attach = on_attach,
+--     capabilities = capabilities,
+--     settings = {
+--         formatCommand = {"black"},
+--         pylsp = {
+--             plugins = {
+--                 pycodestyle = {
+--                     maxLineLength = 100
+--                 },
+--                 pyls_flake8 = { enabled = false },
+--                 pylint = { enabled = true,
+--                 args = { '--rcfile','~/Documents/repos/work/flowcode-api/pyproject.toml' }
+--             },
+--             black = { enabled = true },
+--             isort = { enabled = true },
+--             pyls_mypy = {
+--                 enabled = true,
+--                 --live_mode = true,
+--             },
+--         },
+--     }
+-- }
+--
+--
+--
+-- })
+--
+local python_root_files = {
+  'pyproject.toml',
+  'setup.py',
+  'setup.cfg',
+  'requirements.txt',
+  'Pipfile',
+  'pyrightconfig.json',
 }
 
-require 'lspconfig'.terraformls.setup {}
+require 'lspconfig'.pyright.setup {
+    on_attach = on_attach,
+    root_dir = nvim_lsp.util.root_pattern(unpack(python_root_files))
+}
+
+
+require("lspconfig").tsserver.setup(config())
+
+
+require 'lspconfig'.terraformls.setup({
+    on_attach = on_attach,
+    flags = { debounce_text_changes = 150 },
+    capabilities = capabilities,
+})
+
+vim.api.nvim_create_autocmd({"BufWritePre"}, {
+  pattern = {"*.tf", "*.tfvars"},
+  callback = vim.lsp.buf.formatting_sync,
+})
+
 
 require 'lspconfig'.graphql.setup {
     on_attach = on_attach,
@@ -178,3 +231,5 @@ end
 
 
 require("luasnip.loaders.from_vscode").lazy_load()
+
+
