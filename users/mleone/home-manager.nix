@@ -15,13 +15,14 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.fd
     pkgs.firefox
     pkgs.fzf
+    pkgs.feh
     pkgs.git-crypt
     pkgs.htop
     pkgs.jq
     pkgs.lsd
     pkgs.unzip
     pkgs.vivid
-    pkgs.awscli
+    pkgs.awscli2
     pkgs.ripgrep
     pkgs.rofi
     pkgs.file
@@ -196,9 +197,14 @@ let sources = import ../../nix/sources.nix; in {
       size = 10000000;
     };
 
+    envExtra =  ''
+      source ~/.flowcode/functions/activate
+      '';
+
     initExtra = ''
       export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=5'
       export LS_COLORS=$(vivid generate solarized-dark)
+      export PATH=$PATH:$HOME/.bin
       source $HOME/.config/zsh/functions
       bindkey -e
       bindkey '^U' backward-kill-line
@@ -262,8 +268,9 @@ let sources = import ../../nix/sources.nix; in {
   programs.tmux = {
     enable = true;
     terminal = "xterm-256color";
-    shortcut = "l";
+    shortcut = "f";
     secureSocket = false;
+    keyMode = "vi";
     plugins = with pkgs.tmuxPlugins; [
       tmux-colors-solarized
       pain-control
@@ -271,13 +278,10 @@ let sources = import ../../nix/sources.nix; in {
       dracula
     ];
     extraConfig = ''
-      set -g prefix C-f
-      bind C-f send-prefix
-      set-window-option -g mode-keys vi # vi key
-      set-option -g status-keys vi
+      bind-key / split-window -h -c '#{pane_current_path}' # Split panes vertically
+      bind-key - split-window -v -c '#{pane_current_path}' # Split panes vertically
       set -g default-terminal "xterm-256color"
       set-option -ga terminal-overrides ",xterm-256color:Tc"
-
       '';
   };
 
@@ -288,7 +292,7 @@ let sources = import ../../nix/sources.nix; in {
         TERM = "xterm-256color";
       };
       scrolling = {
-        multiplier = 5;
+        multiplier = 1;
       };
       font = {
         size = 11.5;
@@ -428,7 +432,7 @@ let sources = import ../../nix/sources.nix; in {
       };
 
       python = {
-        format = "[$symbol$pyenv_prefix$version(\($virtualenv\))]($style) ";
+        format = "[$symbol$pyenv_prefix$version(\\($virtualenv\\))]($style) ";
         style = "green";
         symbol = "";
       };
@@ -439,7 +443,7 @@ let sources = import ../../nix/sources.nix; in {
       };
 
       kubernetes = {
-        format = "[\[$context[\($namespace\)](bold purple)\]]($style) ";
+        format = "[\\[$context[\\($namespace\\)](bold purple)\\]]($style) ";
         style = "cyan";
         disabled = false;
       };

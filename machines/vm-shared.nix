@@ -16,8 +16,6 @@
     # public binary cache that I use for all my derivations. You can keep
     # this, use your own, or toss it. Its typically safe to use a binary cache
     # since the data inside is checksummed.
-    binaryCaches = ["https://mitchellh-nixos-config.cachix.org"];
-    binaryCachePublicKeys = ["mitchellh-nixos-config.cachix.org-1:bjEbXJyLrL1HZZHBbO4QALnI5faYZppzkU4D2s0G8RQ="];
   };
 
   # We expect to run the VM on hidpi machines.
@@ -55,6 +53,8 @@
   services.xserver = {
     enable = true;
     layout = "us";
+    autoRepeatDelay = 300;
+    autoRepeatInterval = 50;
     dpi = 220;
 
     desktopManager = {
@@ -70,6 +70,7 @@
       # display resolution. This is a known issue with VMware Fusion.
       sessionCommands = ''
         ${pkgs.xorg.xset}/bin/xset r rate 200 40
+        feh --bg-fill ~/Documents/wallpaper/blood-moon.png
       '';
     };
 
@@ -88,17 +89,12 @@
 
     fonts = [
       pkgs.fira-code
-      (pkgs.nerdfonts.override { fonts = [ "FiraCode" "Meslo" ]; })
+      pkgs.nerdfonts
     ];
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-
-  environment.extraInit = ''
-    unset -v SSH_ASKPASS
-    '';
-
   environment.systemPackages = with pkgs; [
     cachix
     gnumake
@@ -130,7 +126,7 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = true;
-  services.openssh.permitRootLogin = "no";
+  services.openssh.permitRootLogin = "yes";
 
   # Disable the firewall since we're in a VM and we want to make it
   # easy to visit stuff in here. We only use NAT networking anyways.
@@ -142,5 +138,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.09"; # Did you read the comment?
+  system.stateVersion = "22.11"; # Did you read the comment?
 }

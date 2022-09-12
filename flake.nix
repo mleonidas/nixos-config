@@ -43,6 +43,7 @@
       inherit nixpkgs home-manager;
       system = "aarch64-linux";
       user   = "mleone";
+
       overlays = overlays ++ [(final: prev: {
         # TODO: drop after release following NixOS 22.05
         open-vm-tools = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.open-vm-tools;
